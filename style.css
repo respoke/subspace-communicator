@@ -1,0 +1,340 @@
+body {
+    font-family: 'Orbitron';
+    background-color: #000;
+    color: #fff;
+}
+
+a:link {color: rgb(70, 121, 189);}
+a:visited {color: rgb(70, 121, 189);}
+a:hover {color: rgb(70, 121, 189);}
+a:active {color: rgb(70, 121, 189);}
+
+.main {
+	width: 732px;
+	height: 620px;
+}
+
+.header {
+    width: 720px;
+    padding-top: 12px;
+    color: #000;
+    border-radius: 28px;
+    font-family: 'Orbitron';
+    font-size: 24px;
+    text-align: right;
+}
+
+.header .left-dot {
+	border-top-left-radius: 24px;
+	border-bottom-left-radius: 24px;
+	height: 40px;
+	width: 25px;
+	margin-right: 6px;
+	background-color: #CD8612;
+	float: left;
+}
+
+#header-left {
+    background-color: #99CDFF;
+    width: 530px;
+    height: 40px;
+    float: left;
+}
+
+#contacts {
+    float: left;
+    font-size: 16px;
+    margin-left: 8px;
+    margin-top: 5px;
+    display: none;
+}
+
+#title {
+	float: right;
+	margin-top: 8px;
+	margin-right: 6px;
+	font-size: 28px;
+	font-family: 'Orbitron-Bold';
+	color: #fff;
+	width: 125px;
+}
+
+.header .right-dot {
+	border-top-right-radius: 24px;
+	border-bottom-right-radius: 24px;
+	height: 40px;
+	width: 25px;
+	background-color: #CD8612;
+	float: right;
+}
+
+.data {
+    height: 500px;
+    width: 700px;
+    background-image: url('images/ufp_logo.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.footer {
+    width: 720px;
+    height: 28px;
+    margin-right: 10px;
+    padding-top: 12px;
+    color: #000;
+    font-family: 'Orbitron';
+    font-size: 18px;
+    text-align: left;
+    position: absolute;
+    z-index: 99;
+}
+
+.footer .left-dot {
+	border-top-left-radius: 24px;
+	border-bottom-left-radius: 24px;
+	height: 40px;
+	width: 25px;
+	margin-right: 6px;
+	background-color: #CD8612;
+	float: left;
+}
+
+#status {
+	margin-top: 11px;
+    float: left;
+    margin-left: 25px;
+}
+
+#controls {
+	float: right;
+	text-align: right;
+	margin-top: 10px;
+	margin-right: 15px;
+}
+
+#footer-base {
+    background-color: #99CDFF;
+    width: 658px;
+    height: 40px;
+    float: left;
+}
+
+
+.footer .right-dot {
+	border-top-right-radius: 24px;
+	border-bottom-right-radius: 24px;
+	height: 40px;
+	width: 25px;
+	background-color: #CD8612;
+	float: right;
+}
+
+.clickable {
+   cursor: pointer;
+}
+
+.clickable:hover {
+   background: #efefef;
+}
+
+#login {
+    position: absolute;
+    z-index: 10;
+    width: 373px;
+    height: 100px;
+    left: 153px;
+    top: 425px;
+    padding: 10px;
+}
+
+.caption {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#endpoint {
+    width: 200px;
+    height: 34px;
+    font-size: 24px;
+    font-family: 'Orbitron';
+    text-align: center;
+    float: left;
+}
+
+#doLogin {
+    width: 120px;
+    height: 26px;
+    margin-bottom: 12px;
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
+    background-color: #CD8612;
+    text-align: center;
+    padding-top: 14px;
+    float: right;
+}
+
+h5 {
+    font-weight: bold;
+    font-size: 14px;
+    text-align: right;
+}
+
+video {
+    height: 494px;
+}
+
+
+#endpoints {
+    width: 140px;
+}
+
+#messaging {
+    display: none;
+    position: absolute;
+    width: 716px;
+    height: 465px;
+    left: 0px;
+    top: 60px;
+    background-color: rgba(0, 0, 0, 0.3);
+    /* border: 1px solid #fff; */
+    border-radius: 16px;
+}
+
+#messages {
+    height: 350px;
+    width: 646px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-left: 19px;
+    color: #fff;
+    list-style-type: none;
+    font-size: 12px;
+    position: absolute;
+    left: 17px;
+    top: 10px;
+    z-index: 30;
+    line-height: 150%;
+}
+
+#textToSend {
+    width: 630px;
+    padding: 5px;
+    position: absolute;
+    left: 40px;
+    top: 413px;
+    z-index: 40;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+}
+
+#videoOverlay {
+    display: none;
+    z-index: 11;
+    position: absolute;
+    left: 31px;
+    top: -3px;
+    padding: 0px;
+}
+
+#blackout {
+    position: absolute;
+    z-index: 5;
+    width: 600px;
+    height: 50px;
+    top: 360px;
+    left: 50px;
+    background-color: #000;
+    display: none;
+}
+
+#outgoing {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    width: 260px;
+    height: 200px;
+    left: 226px;
+    top: 165px;
+    background-color: rgba(108, 138, 180, 0.99);
+    border-radius: 16px;
+    border: 1px solid #fff;
+    padding: 10px;
+}
+
+#incoming {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    width: 260px;
+    height: 200px;
+    left: 226px;
+    top: 165px;
+    background-color: rgba(108, 138, 180, 0.99);
+    border-radius: 16px;
+    border: 1px solid #fff;
+    padding: 10px;
+}
+
+#login .left-dot {
+	border-top-left-radius: 24px;
+	border-bottom-left-radius: 24px;
+	height: 26px;
+	width: 26px;
+	margin-right: 10px;
+	background-color: #CD8612;
+	float: left;
+	height: 40px;
+}
+.messaging {
+    display: none;
+}
+.system {
+    text-align: left;
+    color: #fff;
+}
+.remote {
+    text-align: left;
+    font-size: 15px;
+}
+.local {
+    text-align: right;
+    font-size: 15px;
+}
+.small {
+    font-size: 11px;
+    text-align: center;
+    margin-left: 14px;
+    color: #fff;
+}
+.tiny {
+    font-size: 11px;
+    color: rgb(70, 121, 189);
+}
+
+.styled-select select {
+	background: transparent;
+	width: 268px;
+	padding: 5px;
+	font-size: 16px;
+	line-height: 1;
+	border: 0;
+	border-radius: 0;
+	height: 34px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	font-family: 'Orbitron';
+}
+   
+@font-face {
+  font-family: 'Orbitron-Bold';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Orbitron-Bold'), url(http://themes.googleusercontent.com/static/fonts/orbitron/v4/Y82YH_MJJWnsH2yUA5AuYbrIa-7acMAeDBVuclsi6Gc.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Orbitron';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Orbitron-Light'), local('Orbitron-Regular'), url(http://themes.googleusercontent.com/static/fonts/orbitron/v4/94ug0rEgQO_WuI_xKJMFc3YhjbSpvc47ee6xR_80Hnw.woff) format('woff');
+}

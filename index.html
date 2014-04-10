@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="utf-8">
+  <title>Subspace Communicator</title>
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    		<div class="left-dot"></div>
+    		<div id="header-left">
+					<div id="contacts" class="messaging styled-select">CONTACT:
+							<select id='endpoints' value=''></select>
+					</div>
+        </div>
+        <div class="right-dot"></div>
+        <div id="title">BS-1701</div>
+    </div>
+    
+    <div class="data">
+          
+        <!-- Login Stuff -->
+        <div id="login">
+        		<div class="left-dot"></div>
+            <input id="endpoint" class="disconnected" type="text" placeholder="IDENTITY" />
+            <div id="doLogin" class="disconnected clickable">ENGAGE</div>
+        </div>
+        
+        <!-- Messaging Stuff -->
+        <div id="messaging" class="messaging">
+            <!-- Group which we use to tell us who's online -->
+            <div id="videoOverlay"></div>
+            <ul id="messages"></ul>
+            <textarea id="textToSend" rows="2" class="connected" disabled></textarea>
+            <div id="blackout"></div>
+            <div id="outgoing">
+                
+            </div>
+            <div id="incoming">
+                
+            </div>
+        </div>
+        
+    </div><!-- end of data div -->
+    
+    
+    <div class="footer">
+			<div class="left-dot"></div>
+			<div id="footer-base">
+				<div id="status">NOT CONNECTED</div>
+				<div id="controls" class="messaging">
+						<input id='audioCall' class="haveEndpoint idle" type='button' value='Audio Call' disabled />
+						<input id='videoCall' class="haveEndpoint idle" type='button' value='Video Call' disabled />
+						<input id='endCall' class="active" type='button' value='Hang Up' disabled />
+						<input id="doLogout" type="button" class="connected" value="Disconnect" disabled />
+				</div>
+			</div>
+			<div class="right-dot"></div>
+			<br />
+			<span class="small">Powered By <a href="http://saucer-section.brightstream.io">Brightstream.io</a></span>
+			<span class="small">Special thanks to <a href='http://www.trekcore.com/'>TrekCore</a> for the sound effects!</span>
+    </div>
+</div>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="https://saucer-section.brightstream.io/brightstream.min.js"></script>
+<script src="code.js"></script>
+</body>
+</html>
