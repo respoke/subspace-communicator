@@ -1,4 +1,7 @@
-// small library from Mozilla for dealing with cookies
+/**
+ * A small library from Mozilla for dealing with cookies.
+ * https://developer.mozilla.org/en-US/docs/Web/API/document.cookie
+ */
 var docCookies = {
   getItem: function (sKey) {
     return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
