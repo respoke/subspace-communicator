@@ -4,20 +4,43 @@
   <link rel="stylesheet" type="text/css" href="style.css">
   <meta charset="utf-8">
   <title>Subspace Communicator</title>
+  <!--
+  			TODO List:
+  			- Reconnect?
+  			- Dialog boxes for incoming and outgoing calls
+  			- Local video display
+  			- Message history
+  			- Composing messages
+  			- Controls to enable / disable sounds, progressive display, etc.
+  			- Real authentication using Google or something
+  			- Bug: hangup on Disconnect
+  			- Change button state on select of group/individual
+  			- create a new group and invite people to join it
+  			- hide scroll bars in non-apple chrome
+  			- create an audio call within a private group
+  			- group creator / admin can remove people from group
+  			- adapt for mobile use
+  			
+  -->
 </head>
 <body>
 <div class="main">
+
+		<!-- HEADER -->
     <div class="header">
     		<div class="left-dot"></div>
     		<div id="header-left">
-					<div id="contacts" class="messaging styled-select">CONTACT:
-							<select id='endpoints' value=''></select>
+					<div id="contacts" class="messaging styled-select connected">
+							CONTACT:&nbsp;<select id='endpoints' value=''></select>
 					</div>
         </div>
         <div class="right-dot"></div>
         <div id="title">BS-1701</div>
     </div>
     
+    <div id="ssc">SUBSPACE COMMUNICATOR</div>
+    
+    <!-- MAIN APPLICATION STUFF -->
     <div class="data">
           
         <!-- Login Stuff -->
@@ -33,37 +56,44 @@
             <div id="videoOverlay"></div>
             <ul id="messages"></ul>
             <textarea id="textToSend" rows="2" class="connected" disabled></textarea>
-            <div id="blackout"></div>
             <div id="outgoing">
                 
             </div>
             <div id="incoming">
-                
+                <div id="message">Incoming subspace communication from:</div>
+                <div id="name">From Name</div>
+                <div id="accept">Accept</div>
+                <div id="reject">Reject</div>
             </div>
         </div>
-        
     </div><!-- end of data div -->
     
-    
+    <!-- FOOTER -->
     <div class="footer">
 			<div class="left-dot"></div>
 			<div id="footer-base">
 				<div id="status">NOT CONNECTED</div>
 				<div id="controls" class="messaging">
-						<input id='audioCall' class="haveEndpoint idle" type='button' value='Audio Call' disabled />
-						<input id='videoCall' class="haveEndpoint idle" type='button' value='Video Call' disabled />
-						<input id='endCall' class="active" type='button' value='Hang Up' disabled />
-						<input id="doLogout" type="button" class="connected" value="Disconnect" disabled />
+						<div id='audioCall' class="button haveEndpoint disabled">AUDIO</div>
+						<div id='videoCall' class="button haveEndpoint disabled">VIDEO</div>
+						<div id='endCall' class="button haveCall disabled">TERMINATE</div>
+						<div id="doLogout" class="button clickable">LOG OUT</div>
 				</div>
 			</div>
 			<div class="right-dot"></div>
 			<br />
-			<span class="small">Powered By <a href="http://saucer-section.brightstream.io">Brightstream.io</a></span>
-			<span class="small">Special thanks to <a href='http://www.trekcore.com/'>TrekCore</a> for the sound effects!</span>
+			<div id="credits">
+				<span class="small">Powered By <a href="http://respoke.io">Respoke</a></span>
+				<span class="small">Special thanks to <a href='http://www.trekcore.com/'>TrekCore</a> for the sound effects!</span>
+			</div>
     </div>
 </div>
+
+<div id="bouncer"></div>
+
 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-<script src="https://saucer-section.brightstream.io/brightstream.min.js"></script>
+<script src="https://www.respoke.io/min/respoke.min.js"></script>
+<script src="ui.js"></script>
 <script src="code.js"></script>
 </body>
 </html>

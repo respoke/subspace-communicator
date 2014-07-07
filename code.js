@@ -2,14 +2,14 @@ $(document).ready(function () {
 	(function() {
 
 		// here's the App ID value from the portal:
-		var appid = "DD90A374-0C06-456F-9D4F-E8038E6523D2";
-
+		var appid = "f25f63f5-7fee-4bed-b11f-c726004892b8";
+		var identity = null;
+		var token = null;
+		
 		// some vars used throughout the app
 		var group = null;        // the group (pub/sub channel) used for messaging and presence
 		var endpoint = null;     // the endpoint to which we are currently chatting
 		var call = null;         // the current call (if any)
-		var lastMsgSrc = null;   // source of the last message displayed
-		var lastMsgDest = null;  // destination of the last message sent
 
 		// tones played to indicate various events
 		var ringTone = null;
@@ -18,121 +18,114 @@ $(document).ready(function () {
 		var messageInTone = null;
 		var messageOutTone = null;
 
-		// create a Brightstream client object using the App ID
-		var client = new brightstream.Client({
-				"appId": appid
+		// create a Respoke client object using the App ID
+		var client = new respoke.Client({
+				"appId": appid,
+				"developmentMode": true
 		});
 
+		// all user interface state functions moved to another file/class
+		var ui = new uiState();
+		
 		// listen for the 'connect' event and transition to the logged-in state
-		// TODO: create two state classes to clean some of this up
 		client.listen('connect', function () {
+				console.log("CONNECT EVENT");
 				// join the 'everyone' group so we can see who's online
 				joinMainGroup();
-
-				// update the screen
-				$("#status").html("Connected As: " + $("#endpoint").val());
-				$(".disconnected").attr("disabled", "disabled");
-				$(".connected").removeAttr("disabled");
-				$(".messaging").css("display", "block");
-				$("#blackout").css("display", "block");
-				$("#login").css("display", "none");
 		
 				// add the group messaging option to the contacts list
 				$("#endpoints").append("<option value='group-message'>Everyone</option>");
-				$("#textToSend").focus();
-		
-				displaySystemMessage("Connected.");
+				
+				// display the messaging interface
+				ui.connected();
 		});
 
+		client.listen('reconnect', function() {
+			console.log("RECONNECT EVENT");
+			ui.connected();
+		});
+		
 		// listen for the 'disconnect' event and transition to the logged-out state
 		client.listen('disconnect', function () {
-				$("#status").html("Not Connected");
-				$(".disconnected").removeAttr("disabled");
-				$(".connected").attr("disabled", "disabled");
-				$(".haveEndpoint").attr("disabled", "disabled");
-				$(".messaging").css("display", "none");
-				$("#blackout").css("display", "none");
-				$("#login").css("display", "block");
-				$("#endpoints").empty();
-				$("#messages").empty();
+		
+				if (!token) {
+					// if the token has been deleted, this is a logout
+					ui.loggedOut();
+				} else {				
+					// if the token is still valid, this is a connectivity glitch
+					ui.disconnected();
+				}
 		});
 
 		// listen for incoming messages
 		client.listen('message', function (evt) {
+				if (evt.group !== undefined) return;
 				messageInTone.play();
-				displayMessage(evt.message.message, evt.message.endpointId);
+				ui.displayMessage(evt.message.message, evt.message.endpointId, "Me");
 		});
 
+    client.listen('call', function(evt) {
+      // ignore calls that we start
+      if (evt.call.caller === true) {
+        return;
+      }
+
+      console.log("---- INCOMING CALL ----");
+      console.dir(evt);
+
+      // if we already have a call, reject the incoming call
+      if (call) {
+        evt.call.reject();
+        return;
+      }
+      
+      // play the incoming call ring tone
+      ringTone.play();
+        
+      // display the incoming call UI and see what the user wants to do
+      ui.incomingCall(evt.call, function(accept) {
+        if (accept === false) {
+          evt.call.reject();
+          return;
+        }
+        
+        // cache the call from the event as our master call object
+        call = evt.call;
+        
+        // THIS SHOULD HAVE A WAY TO FIGURE OUT IF AUDIO OR VIDEO, BUT IT DOESN'T					
+        call.listen('connect', function(evt) {
+          console.log("CALL CONNECTED");
+          ui.videoActive(evt.element);
+        });
+      
+        call.listen('hangup', terminateCall);
+        
+        // TODO: Launch "INCOMING" dialog here with timer to reject the call after N seconds.
+        ui.videoPending(call);
+      
+        call.answer({
+          constraints: {
+            audio: true,
+            video: true
+          }
+        });
+        
+      });
+    });
+    
 		// connect the client and add an additional listener for incoming calls
-		var connect = function(token) {
+		var connect = function(endpoint) {
 
 			client.connect({
-				authToken: token,
-
+				endpointId: endpoint,
+				developmentMode: true,
+				appId: appid
+				
 				// hook the 'call' event. - SHOULD ALSO BE AN EVENT ("call") NOT JUST A CALLBACK
-				onCall: function (evt) {
-
-					// ignore calls that we initiated
-					if (evt.call.initiator === true) {
-						return;
-					}
-
-					console.log("---- INCOMING CALL ----");
-					console.dir(evt);
-
-					ringTone.play();
-					call = evt.call;
-
-					// TODO: Launch "INCOMING" dialog here with timer to reject the call after N seconds.
-
-					// answer the call with matching constraints
-					// DAMN - THIS DOES NOT WORK. NO WAY TO FIND OUT IF AUDIO OR VIDEO!!!
-					// TODO: Revise using the new signaling features we discussed on 4/4/14
-					if (call.getRemoteStreams().length > 0) {  // Always returns 0 at this point!
-						call.answer({
-							constraints: {
-								audio: true,
-								video: true
-							},
-							onRemoteVideo: activateVideoCall,
-							onHangup: terminateCall
-						});
-					} else {
-						call.answer({
-							constraints: {
-								audio: true,
-								video: true // SHOULD BE FALSE!!!!
-							},
-							onRemoteVideo: activateVideoCall, // SHOULD BE activateAudioCall!!!
-							onHangup: terminateCall
-						});
-					}
-					activateAudioCall();
-				}
+//				onCall: function (evt) {
+//				}
 			});
 		};
-
-		// to connect, we will need an access token, so retrieve that using the 
-		// AJAX capabilities of jQuery. Note that in a production app you will need
-		// to get this from your own server, not directly from Brightstream!
-		function getTokenAndConnect(endpoint) {
-				$.ajax({
-						type: 'POST',
-						url: 'https://collective.brightstream.io/v1/tokens/',
-						data: {
-								"appId": appid,
-								"endpointId": endpoint,
-								"ttl": "60000"
-						},
-						success: function (resp) {
-								// connect using the token we retrieved
-								connect(resp.tokenId);
-						},
-						error: function (err) {
-								alert(err.statusText);
-						}
-				});
-		}
 
 		// CONVENIENCE FUNCTIONS TO HANDLE VARIOUS EVENTS
 
@@ -140,18 +133,21 @@ $(document).ready(function () {
 		var handleJoin = function(evt) {
 				console.log("-- ON-JOIN --");
 				console.dir(evt);
-				// don't add the endpoint if it's this client's endpoint (i.e. "myself")
-				if (evt.endpoint.name != client.user.name) {
 				
+				var endpoint = evt.connection.getEndpoint();
+				
+				// don't add the endpoint if it's this client's endpoint (i.e. "myself")
+				if (endpoint.id != client.endpointId) {
+						
 						// check for and prevent duplicates
-						if ($("#endpoints option[value='" + evt.endpoint.id + "']").length === 0) {
+						if ($("#endpoints option[value='" + endpoint.id + "']").length === 0) {
 						
 								// create and add an option for the endpoint
-								var opt = "<option value='" + evt.endpoint.id + "'>" + evt.endpoint.id + "</option>\n";
+								var opt = "<option value='" + endpoint.id + "'>" + endpoint.id + "</option>\n";
 								$("#endpoints").append(opt);
 						
 								// display the change
-								displaySystemMessage(evt.endpoint.id + " Connected");
+								ui.displaySystemMessage(endpoint.id + " is online.");
 						
 								// play the "somebody joined" tone
 								joinTone.play();
@@ -169,33 +165,36 @@ $(document).ready(function () {
 				// remove from the drop-down list
 				console.log("-- ON-LEAVE --");
 		
-				// remove the endpoint from the list
-				$("#endpoints option[value='" + evt.endpoint.id + "']").remove();
-		
+				var ep = evt.connection.getEndpoint();
+				
 				// display the chanage
-				displaySystemMessage(evt.endpoint.id + " Disconnected");
-		
+				ui.displaySystemMessage(ep.id + " disconnected.");
+				
+				// if the endpoint leaving is the currently selected endpoint, switch to group
+				if (endpoint && (ep.id == endpoint.id)) {
+					$("#endpoints").val("group-message");
+					console.log("switching back to group");
+					selectEndpoint();
+				}
+				
+				// remove the endpoint from the list
+				$("#endpoints option[value='" + ep.id + "']").remove();
+						
 				// play the "somebody left" tone
-				leaveTone.play();
-		
-				// if that was the currently selected endpoint, disable the UI
-				if (endpoint && (evt.endpoint.id == endpoint.id)) {
-						endpoint = null;
-						$(".haveEndpoint").attr("disabled", "disabled");
-				}  
+				leaveTone.play(); 
 		};
 
 		var handleGroupMessage = function(evt) {
 				console.log("-- GROUP MESSAGE --");
 				console.dir(evt);
 				messageInTone.play();
-				displayMessage(evt.message.message, evt.message.endpointId + " (To Everyone)");
+				ui.displayMessage(evt.message.message, evt.message.endpointId);
 		};
 
 		// join the main 'everyone' group. this isn't used as a 'chat group' - just as
 		// a presence indicator.
 		var joinMainGroup = function () {
-
+				console.log("JOINING GROUP 'everyone'");
 				client.join({
 						"id": "everyone",
 						"onJoin": handleJoin,
@@ -203,7 +202,16 @@ $(document).ready(function () {
 						"onMessage": handleGroupMessage,
 						"onSuccess": function (grp) {
 								// request all current endpoints
-								grp.getEndpoints();
+								grp.getMembers().done(function getMembers(members) {
+                  console.log('members: ', members);
+                  for (var i = 0; i < members.length; i++) {
+                    console.dir(members[i]);
+                    var evt = {};
+                    evt.connection = members[i];
+                    handleJoin(evt);
+                  }
+                });
+
 								// cache a link to the group
 								group = grp;
 						}        
@@ -222,10 +230,7 @@ $(document).ready(function () {
 					endpoint = null;
 			
 					// lock the call controls - no group calls (yet)
-					$(".haveEndpoint").attr("disabled", "disabled");
-			
-					// Note the selection change
-					displaySystemMessage("Selected Contact: Everyone (Group Messaging)");
+					ui.groupSelected();		
 				
 				} else {
 		
@@ -237,105 +242,13 @@ $(document).ready(function () {
 					// add to local storage for convenience
 					localStorage.setItem('remote', remoteId);
 
-					// display the change
-					displaySystemMessage("Selected Contact: " + remoteId);
-		
-					// enable all the endpoint-related functions
-					$(".haveEndpoint").removeAttr("disabled");
+					ui.endpointSelected(remoteId);
 				}
 				
 				// focus to the text box
 				$("#textToSend").focus();
 		};
 
-		// for grins, display the incoming message progressively (one character at a time)
-		var displayBits = function(span, message) {
-				span = $('#'+span);
-				$.each(message.split(''), function(i, letter){
-		
-						//we add 100*i ms delay to each letter 
-						setTimeout(function(){
-		
-								//we add the letter to the container
-								span.html(span.html() + letter);
-				
-						}, 10*i);
-				});
-		};
-
-		// display system messages - meta data for the system
-		var displaySystemMessage = function(message) {
-				// add the actual message text
-				var id = "msg_" + new Date().getTime();
-				var msg = "<li class='system'>";
-				//msg += "<span class='tiny'>System</span><br />";
-				msg += "<span id='" + id + "'>&gt;&gt;&nbsp;" + message + "</span></li>";
-				$("#messages").append(msg);       
-		
-				// scroll to the bottom of the list
-				$("#messages").animate({
-						scrollTop: $('#messages')[0].scrollHeight
-				}, 1000);
-		};
-
-		// convenience function to display messages - both incoming messages from remote
-		// parties and local messages sent out.
-		var displayMessage = function (message, source) {
-
-				// new message item
-				var msg;
-		
-				// replace URLs with links
-				var mtext = message.replace( /(http:\/\/[^\s]+)/gi , '<a target=\'_blank\' href="$1">$1</a>' );
-		
-				// destination is either an endpoint or "group"
-				var dest = endpoint ? endpoint.id : "Everyone";
-	
-				// make a copy of the source value that we can change
-				var src = source;
-		
-				// create a new list item to display the message
-				if (source) {
-						// incoming message - from "remote"
-						msg = "<li class='remote'>";
-						src = src + " => Me";
-				} else {
-						// outgoing message - from "me"
-						msg = "<li class='local'>";
-						src = "Me => " + dest;
-				}
-		
-				// if this message was from a different sender than the last message, add
-				// a source identifier
-				if ((lastMsgSrc != src) || (lastMsgDest != dest)) {
-						// add the source
-						msg += "<span class='tiny'>" + src + "</span><br />";
-
-						// update the last message source value
-						lastMsgSrc = src;
-						lastMsgDest = dest;
-				}
-
-				// add the actual message text
-				var id = "msg_" + new Date().getTime();
-				if ((source) && (mtext == message)) {
-						// add the message blank
-						msg += "<span id='" + id + "'></span></li>";
-						$("#messages").append(msg);
-				
-						// do this old-school
-						displayBits(id, message);
-				} else {
-						msg += "<span id='" + id + "'>" + mtext + "</span></li>";
-						$("#messages").append(msg);       
-				}
-		
-		
-				// scroll to the bottom of the list
-				$("#messages").animate({
-						scrollTop: $('#messages')[0].scrollHeight
-				}, 1000);
-		};
 
 		// send a message. called by button click and enter key
 		var sendMessage = function () {
@@ -358,7 +271,8 @@ $(document).ready(function () {
 				}
 		
 				// display it
-				displayMessage(messageText);
+				var dest = endpoint ? endpoint.id : null;
+				ui.displayMessage(messageText, "Me", dest);
 
 				// play tone
 				messageOutTone.play();
@@ -367,109 +281,100 @@ $(document).ready(function () {
 				$("#textToSend").val("");
 		};
 
-		// add the video element and enable video controls
-		var activateVideoCall = function (evt) {
-				console.log("-- ON VIDEO ELEMENT --");
-				console.dir(evt);
-				console.dir(evt.target.getRemoteStreams());
-				if ((evt) && (evt)) {
-						var vo = $("#videoOverlay");
-						vo.append(evt.element);
-						vo.css("display", "block");
-				}
-		};
-
-		// activate audio elements (mute) and call controls
-		var activateAudioCall = function(evt) {
-				$(".idle").attr("disabled", "disabled");
-				$(".active").removeAttr("disabled");
-		};
-
-		// Go back to text mode, hiding video stuff
+		// Called on hangup. Go back to text mode, hiding video stuff
 		var terminateCall = function (evt) {
-				var vo = $("#videoOverlay");
-				vo.empty();
-				vo.css("display", "none");
-				$(".idle").removeAttr("disabled");
-				$(".active").attr("disabled", "disabled");
+				ui.idle();
+				
+				// delete the call object
+				call = null;
 		};
 
 		// HOOK VARIOUS BUTTONS ON THE UI
 
 		// now connect when the user clicks the 'Connect' button
 		$("#doLogin").click(function () {
-				// get the endpoint ID
-				var endpoint = $("#endpoint").val();
+			// get the endpoint ID
+			var id = $("#endpoint").val();
 
-				// make sure that the endpoint is at least 3 characters
-				if ((!endpoint) || (endpoint.length < 3)) return;
-		
-				// store it for future reference
-				localStorage.setItem('username', endpoint);
+			// 
+			identity = id;
+			
+			// make sure that the endpoint is at least 3 characters
+			if ((!identity) || (identity.length < 3)) return;
+	
+			// store it for future reference
+			localStorage.setItem('username', identity);
 
-				// try to get a token and connect to Brightstream
-				getTokenAndConnect(endpoint);
+			// try to get a token and connect to Respoke
+			//if (!token) {
+			connect(identity);
+			//}
 		});
 
 		// now connect when the user clicks the 'Connect' button
 		$("#doLogout").click(function () {
-				client.disconnect();
+			token = null;
+			client.disconnect();
 		});
 
 		// Select an endpoint when the selection changes
 		$("#endpoints").change(function () {
-				selectEndpoint();
+			selectEndpoint();
 		});
 
 		// Send messages automatically on <enter> in message box
 		$("#textToSend").keypress(function (e) {
-				if (e.which == 13) {
-						sendMessage();
-						return false;
-				}
+			if (e.which == 13) {
+				sendMessage();
+				return false;
+			}
 		});
 
-		// Send a message when somebody clicks the button
-		$("#sendMessage").click(sendMessage);
 
 		// make an audio call
 		$("#audioCall").click(function () {
-				// if we have an endpoint
-				if (endpoint) {
-						// make an audio call
-						call = endpoint.call({
-								constraints: {
-										audio: true,
-										video: false
-								},
-								onHangup: terminateCall
-								// THERE NEEDS TO BE A PROGRESS CALLBACK
-						});
-						activateAudioCall();
-				}
+			// if we have an endpoint
+			if (endpoint) {
+				// go into "outbound audio call" mode
+				ui.audioPending();
+				
+				// make an audio call
+				call = endpoint.startAudioCall({
+						onHangup: terminateCall
+						// THERE NEEDS TO BE A PROGRESS CALLBACK
+				});
+				
+				// listen for the connected event.
+				call.listen('connected', function(evt) {
+					ui.audioActive();
+				});
+			}
 		});
 
 		// make a video call
 		$("#videoCall").click(function () {
 				// if we have an endpoint
 				if (endpoint) {
-						// make a video call
-						call = endpoint.call({
-								constraints: {
-										audio: true,
-										video: true
-								},
-								onRemoteVideo: activateVideoCall,
-								onHangup: terminateCall
-								// THERE NEEDS TO BE A MORE GRANULAR AND MORE CONCRETE CALLBACKS
-						});
-						activateAudioCall();
+					// go into pending video call mode
+					ui.videoPending();
+					
+					// make a video call
+					call = endpoint.startVideoCall({
+							onHangup: terminateCall
+							// THERE NEEDS TO BE A MORE GRANULAR AND MORE CONCRETE CALLBACKS
+					});
+					call.listen('connect', function(evt) {
+						console.log("CALL CONNECTED");
+						ui.videoActive(evt.element);
+					});
 				}
 		});
 
 		// Hang up the call
 		$("#endCall").click(function () {
+			if (call) {
 				call.hangup();
+			}
 		});
 
 		// center up the communicator in the window
@@ -489,11 +394,29 @@ $(document).ready(function () {
 		messageInTone = new Audio("audio/computerbeep_11.mp3");
 		messageOutTone = new Audio("audio/computerbeep_9.mp3");
 		var startup = new Audio("audio/computer_activate.mp3");
-		startup.play();
+		startup.oncanplay = function() {
+			startup.play();
+		}
 
 		// To initially run the function:
 		$(window).resize();
 
+		var updateOnlineStatus = function(evt) {
+			console.log("Online Event");
+			console.dir(evt);
+			if (evt.type == "offline") {
+				if (token) {
+					ui.disconnected();
+				}
+			} else {
+				if (client.isConnected() === true) {
+					ui.connected();
+				}
+			}
+		}
+		
+		window.addEventListener('online',  updateOnlineStatus);
+		window.addEventListener('offline', updateOnlineStatus);
 		
 	}());
 });

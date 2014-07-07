@@ -1,5 +1,5 @@
 body {
-    font-family: 'Orbitron';
+    font-family: Arial, Helvetica;
     background-color: #000;
     color: #fff;
 }
@@ -19,52 +19,76 @@ a:active {color: rgb(70, 121, 189);}
     padding-top: 12px;
     color: #000;
     border-radius: 28px;
-    font-family: 'Orbitron';
-    font-size: 24px;
     text-align: right;
 }
 
 .header .left-dot {
 	border-top-left-radius: 24px;
 	border-bottom-left-radius: 24px;
-	height: 40px;
+	height: 31px;
 	width: 25px;
 	margin-right: 6px;
-	background-color: #CD8612;
+	background-color: #A89B35;
 	float: left;
 }
 
 #header-left {
-    background-color: #99CDFF;
-    width: 530px;
-    height: 40px;
+    background-color: #8CDCFC;
+    width: 565px;
+    height: 31px;
     float: left;
 }
 
+#ssc {
+	position: absolute;
+	top: 85px;
+	left: 135px;
+	font-family: 'Lcars';
+	font-size: 56px;
+	z-index: 8;
+}
+
 #contacts {
-    float: left;
-    font-size: 16px;
-    margin-left: 8px;
-    margin-top: 5px;
-    display: none;
+	float: left;
+	font-size: 16px;
+	margin-left: 8px;
+	margin-top: 2px;
+	display: none;
+}
+
+.styled-select select {
+	background: url('images/arrow_down.png') no-repeat right rgba(0, 0, 0, 0.1);
+	width: 325px;
+	padding: 5px;
+	padding-right: 10px;
+	font-size: 16px;
+	line-height: 1;
+	border: 0;
+	border-radius: 5px;
+	height: 28px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
+#endpoints {
+    width: 170px;
 }
 
 #title {
 	float: right;
-	margin-top: 8px;
-	margin-right: 6px;
-	font-size: 28px;
-	font-family: 'Orbitron-Bold';
+	margin-right: 2px;
+	font-size: 41px;
+	font-family: 'Lcars';
 	color: #fff;
-	width: 125px;
+	width: 95px;
 }
 
 .header .right-dot {
 	border-top-right-radius: 24px;
 	border-bottom-right-radius: 24px;
-	height: 40px;
+	height: 31px;
 	width: 25px;
-	background-color: #CD8612;
+	background-color: #A89B35;
 	float: right;
 }
 
@@ -82,8 +106,6 @@ a:active {color: rgb(70, 121, 189);}
     margin-right: 10px;
     padding-top: 12px;
     color: #000;
-    font-family: 'Orbitron';
-    font-size: 18px;
     text-align: left;
     position: absolute;
     z-index: 99;
@@ -92,41 +114,42 @@ a:active {color: rgb(70, 121, 189);}
 .footer .left-dot {
 	border-top-left-radius: 24px;
 	border-bottom-left-radius: 24px;
-	height: 40px;
+	height: 31px;
 	width: 25px;
 	margin-right: 6px;
-	background-color: #CD8612;
+	background-color: #A89B35;
 	float: left;
 }
 
 #status {
-	margin-top: 11px;
-    float: left;
-    margin-left: 25px;
+	margin-top: 6px;
+  float: left;
+  margin-left: 15px;
+  font-family: 'Arial Narrow', 'Arial', 'Helvetica';
 }
 
 #controls {
 	float: right;
-	text-align: right;
-	margin-top: 10px;
+	text-align: center;
+	margin-top: 4px;
 	margin-right: 15px;
+	font-family: Arial, Helvetica;
 }
 
-#footer-base {
-    background-color: #99CDFF;
-    width: 658px;
-    height: 40px;
-    float: left;
-}
-
-
-.footer .right-dot {
-	border-top-right-radius: 24px;
-	border-bottom-right-radius: 24px;
-	height: 40px;
-	width: 25px;
-	background-color: #CD8612;
-	float: right;
+.button {
+	float: left;
+	margin-left: 5px;
+	margin-right: 5px;
+	font-size: 11px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-right: 12px;
+	padding-left: 8px;
+	border-top-right-radius: 20px;
+	border-bottom-right-radius: 20px;
+	background-color: #4660DE;
+	color: #fff;
+	width: 76px;
 }
 
 .clickable {
@@ -135,7 +158,31 @@ a:active {color: rgb(70, 121, 189);}
 
 .clickable:hover {
    background: #efefef;
+   color: #000;
 }
+
+.disabled {
+	background-color: #C7C7C7!important;
+	cursor: default;
+}
+
+#footer-base {
+    background-color: #8CDCFC;
+    width: 658px;
+    height: 31px;
+    float: left;
+}
+
+
+.footer .right-dot {
+	border-top-right-radius: 24px;
+	border-bottom-right-radius: 24px;
+	height: 31px;
+	width: 25px;
+	background-color: #A89B35;
+	float: right;
+}
+
 
 #login {
     position: absolute;
@@ -147,31 +194,43 @@ a:active {color: rgb(70, 121, 189);}
     padding: 10px;
 }
 
-.caption {
-    font-size: 20px;
-    font-weight: bold;
+#login .left-dot {
+	border-top-left-radius: 24px;
+	border-bottom-left-radius: 24px;
+	height: 26px;
+	width: 26px;
+	margin-right: 10px;
+	background-color: #D45F10;
+	float: left;
+	height: 40px;
 }
 
 #endpoint {
     width: 200px;
     height: 34px;
     font-size: 24px;
-    font-family: 'Orbitron';
     text-align: center;
     float: left;
 }
 
 #doLogin {
     width: 120px;
-    height: 26px;
+    height: 28px;
     margin-bottom: 12px;
     border-top-right-radius: 24px;
     border-bottom-right-radius: 24px;
-    background-color: #CD8612;
+    background-color: #D45F10;
     text-align: center;
-    padding-top: 14px;
+    padding-top: 12px;
     float: right;
 }
+
+.caption {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
 
 h5 {
     font-weight: bold;
@@ -183,45 +242,54 @@ video {
     height: 494px;
 }
 
-
-#endpoints {
-    width: 140px;
-}
-
 #messaging {
     display: none;
     position: absolute;
-    width: 716px;
+    width: 720px;
     height: 465px;
     left: 0px;
-    top: 60px;
+    top: 50px;
     background-color: rgba(0, 0, 0, 0.3);
     /* border: 1px solid #fff; */
     border-radius: 16px;
 }
 
 #messages {
-    height: 350px;
-    width: 646px;
+    height: 398px;
+    width: 715px;
     overflow-x: hidden;
-    overflow-y: auto;
-    padding-left: 19px;
+    overflow-y: overlay;
+    padding-left: 0px;
     color: #fff;
     list-style-type: none;
-    font-size: 12px;
+    font-size: 14px;
+    font-family: 'Arial Narrow', 'Arial', 'Helvetica';
     position: absolute;
-    left: 17px;
-    top: 10px;
     z-index: 30;
-    line-height: 150%;
+    line-height: 130%;
+
+    padding-right: 5px;
 }
 
+::-webkit-scrollbar{
+  width: 1px;
+  background-color: transparent;
+} 
+
+::-webkit-scrollbar-thumb{
+	width: 1px;
+	height: 1px;
+
+}  
+
 #textToSend {
-    width: 630px;
+    width: 704px;
     padding: 5px;
+    border-radius: 5px;
+    border: 1px solid rgba(22, 94, 228, 0.4);
     position: absolute;
-    left: 40px;
-    top: 413px;
+    left: 0px;
+    top: 425px;
     z-index: 40;
     background-color: rgba(0, 0, 0, 0.5);
     color: #fff;
@@ -234,17 +302,6 @@ video {
     left: 31px;
     top: -3px;
     padding: 0px;
-}
-
-#blackout {
-    position: absolute;
-    z-index: 5;
-    width: 600px;
-    height: 50px;
-    top: 360px;
-    left: 50px;
-    background-color: #000;
-    display: none;
 }
 
 #outgoing {
@@ -275,16 +332,26 @@ video {
     padding: 10px;
 }
 
-#login .left-dot {
-	border-top-left-radius: 24px;
-	border-bottom-left-radius: 24px;
-	height: 26px;
-	width: 26px;
-	margin-right: 10px;
-	background-color: #CD8612;
-	float: left;
-	height: 40px;
+#incoming #message {
+  font-size: 18px;
+  font-weight: bold;
+  width: 260px;
+  height: 24px;
+  text-align: center;
 }
+
+#incoming #name {
+  font-size: 18px;
+  font-weight: bold;
+  width: 260px;
+  height: 24px;
+  text-align: center;
+}
+
+#credits {
+	margin-left: 20px;
+}
+
 .messaging {
     display: none;
 }
@@ -308,23 +375,11 @@ video {
 }
 .tiny {
     font-size: 11px;
-    color: rgb(70, 121, 189);
+    color: #8BDEFE;
 }
 
-.styled-select select {
-	background: transparent;
-	width: 268px;
-	padding: 5px;
-	font-size: 16px;
-	line-height: 1;
-	border: 0;
-	border-radius: 0;
-	height: 34px;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	font-family: 'Orbitron';
-}
-   
+
+
 @font-face {
   font-family: 'Orbitron-Bold';
   font-style: normal;
@@ -337,4 +392,10 @@ video {
   font-style: normal;
   font-weight: 400;
   src: local('Orbitron-Light'), local('Orbitron-Regular'), url(http://themes.googleusercontent.com/static/fonts/orbitron/v4/94ug0rEgQO_WuI_xKJMFc3YhjbSpvc47ee6xR_80Hnw.woff) format('woff');
+}
+
+@font-face {
+  font-family: 'Lcars';
+  font-style: normal;
+  src: url('fonts/cuc.ttf');
 }
